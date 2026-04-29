@@ -92,7 +92,7 @@ class _TrendIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
@@ -148,7 +148,7 @@ class _SimpleLineChart extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isLast
                         ? Colors.purple[400]
-                        : Colors.purple[200]?.withOpacity(0.6),
+                        : Colors.purple[200]?.withValues(alpha: 0.6),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4),
@@ -227,7 +227,7 @@ class _StatBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

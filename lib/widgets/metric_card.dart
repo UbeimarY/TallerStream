@@ -27,7 +27,10 @@ class MetricCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [color.withOpacity(0.08), color.withOpacity(0.02)],
+            colors: [
+              color.withValues(alpha: 0.08),
+              color.withValues(alpha: 0.02),
+            ],
           ),
         ),
         child: Padding(
@@ -52,7 +55,11 @@ class MetricCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              Divider(height: 1, color: color.withOpacity(0.3), thickness: 1),
+              Divider(
+                height: 1,
+                color: color.withValues(alpha: 0.3),
+                thickness: 1,
+              ),
               const SizedBox(height: 12),
               Text(
                 value,

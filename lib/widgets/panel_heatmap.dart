@@ -169,7 +169,7 @@ class _PanelCell extends StatelessWidget {
           border: Border.all(color: Colors.black12, width: 0.5),
           boxShadow: [
             BoxShadow(
-              color: _cellColor.withOpacity(0.3),
+              color: _cellColor.withValues(alpha: 0.3),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
