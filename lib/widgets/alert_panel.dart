@@ -95,7 +95,7 @@ class _AlertPanelState extends State<AlertPanel> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _alerts.length.clamp(0, 8),
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final alert = _alerts[index];
                   return _AlertTile(

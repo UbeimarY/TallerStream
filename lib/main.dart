@@ -40,7 +40,7 @@ class _SolarPlantAppState extends State<SolarPlantApp> {
           seedColor: const Color(0xFF1A237E),
         ),
         useMaterial3: true,
-        cardTheme: const CardTheme(
+        cardTheme: const CardThemeData(
           surfaceTintColor: Colors.transparent,
         ),
       ),

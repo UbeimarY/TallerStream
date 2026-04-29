@@ -1,6 +1,7 @@
 import 'dart:async';
 import '../models/solar_panel.dart';
-import '../screens/energy_stream_controller.dart';
+import '../models/plant_alert.dart';
+import 'energy_stream_controller.dart';
 import 'alert_stream_controller.dart';
 import 'grid_stream_controller.dart';
 
