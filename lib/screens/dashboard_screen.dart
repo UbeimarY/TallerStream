@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import '../streams/solar_monitor_bloc.dart';
 import '../streams/grid_stream_controller.dart';
 import '../models/solar_panel.dart';
+import '../models/production_history.dart';
 import '../widgets/metric_card.dart';
 import '../widgets/panel_heatmap.dart';
 import '../widgets/alert_panel.dart';
 import '../widgets/panel_detail_sheet.dart';
+import '../widgets/production_chart.dart';
 
 class DashboardScreen extends StatefulWidget {
   final SolarMonitorBloc bloc;
@@ -286,6 +288,17 @@ class _OverviewTab extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         PanelHeatmap(panelStream: bloc.panelStream, onPanelTap: onPanelTap),
+        const SizedBox(height: 16),
+        // Gráfico de producción histórica
+        StreamBuilder<ProductionStats>(
+          stream: bloc.productionStatsStream,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox();
+            }
+            return ProductionChart(stats: snapshot.data!);
+          },
+        ),
       ],
     );
   }
