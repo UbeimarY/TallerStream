@@ -75,8 +75,9 @@ class PanelHeatmap extends StatelessWidget {
                         children: rowPanels.map((panel) {
                           return Expanded(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 2,
+                              ),
                               child: _PanelCell(
                                 panel: panel,
                                 maxOutput: maxOutput,
@@ -140,8 +141,9 @@ class _PanelCell extends StatelessWidget {
   Color get _cellColor {
     switch (panel.status) {
       case PanelStatus.optimal:
-        final intensity =
-            maxOutput > 0 ? panel.currentOutputKw / maxOutput : 0.5;
+        final intensity = maxOutput > 0
+            ? panel.currentOutputKw / maxOutput
+            : 0.5;
         return Color.lerp(Colors.green[100]!, Colors.green[700]!, intensity)!;
       case PanelStatus.degraded:
         return Colors.orange[300]!;
@@ -160,22 +162,44 @@ class _PanelCell extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 600),
-        height: 44,
+        height: 64,
         decoration: BoxDecoration(
           color: _cellColor,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.black12, width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: _cellColor.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Center(
-          child: Text(
-            panel.status == PanelStatus.offline
-                ? '—'
-                : panel.currentOutputKw.toStringAsFixed(1),
-            style: const TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                panel.id,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                panel.status == PanelStatus.offline
+                    ? '—'
+                    : '${panel.currentOutputKw.toStringAsFixed(1)} kW',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
       ),

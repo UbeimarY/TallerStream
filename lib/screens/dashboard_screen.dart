@@ -58,60 +58,134 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Planta Solar Orión',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Monitoreo en tiempo real',
-              style: TextStyle(fontSize: 11, color: Colors.white70),
-            ),
-          ],
-        ),
-        backgroundColor: const Color(0xFF1A237E),
-        foregroundColor: Colors.white,
-        actions: [
-          StreamBuilder<List<SolarPanel>>(
-            stream: widget.bloc.panelStream,
-            builder: (context, snapshot) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: snapshot.hasData
-                            ? Colors.greenAccent
-                            : Colors.grey,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      snapshot.hasData ? 'EN VIVO' : 'CONECTANDO...',
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                  ],
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 160,
+            backgroundColor: const Color(0xFF1A237E),
+            foregroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF1A237E), Color(0xFF283593)],
+                  ),
                 ),
-              );
-            },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'Planta Solar Orión',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      StreamBuilder<PlantSummary>(
+                        stream: widget.bloc.summaryStream,
+                        builder: (context, snapshot) {
+                          final s = snapshot.data;
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Producción Total',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    s != null
+                                        ? '${s.totalOutputKw.toStringAsFixed(1)} kW'
+                                        : '—',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              StreamBuilder<List<SolarPanel>>(
+                                stream: widget.bloc.panelStream,
+                                builder: (context, snapshot) {
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: snapshot.hasData
+                                              ? Colors.greenAccent
+                                              : Colors.grey,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 6,
+                                              height: 6,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              snapshot.hasData
+                                                  ? 'EN VIVO'
+                                                  : 'CONECTANDO...',
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
-      ),
-      body: IndexedStack(
-        index: _selectedTab,
-        children: [
-          _OverviewTab(bloc: widget.bloc, onPanelTap: _showPanelDetail),
-          _HeatmapTab(bloc: widget.bloc, onPanelTap: _showPanelDetail),
-          _AlertsTab(bloc: widget.bloc),
-          _GridTab(bloc: widget.bloc),
-        ],
+        body: IndexedStack(
+          index: _selectedTab,
+          children: [
+            _OverviewTab(bloc: widget.bloc, onPanelTap: _showPanelDetail),
+            _HeatmapTab(bloc: widget.bloc, onPanelTap: _showPanelDetail),
+            _AlertsTab(bloc: widget.bloc),
+            _GridTab(bloc: widget.bloc),
+          ],
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedTab,
@@ -170,18 +244,14 @@ class _OverviewTab extends StatelessWidget {
               children: [
                 MetricCard(
                   label: 'Producción total',
-                  value: s != null
-                      ? s.totalOutputKw.toStringAsFixed(1)
-                      : '—',
+                  value: s != null ? s.totalOutputKw.toStringAsFixed(1) : '—',
                   unit: 'kW en este momento',
                   color: Colors.orange,
                   icon: Icons.solar_power,
                 ),
                 MetricCard(
                   label: 'Exportando a la red',
-                  value: s != null
-                      ? s.exportingKw.toStringAsFixed(1)
-                      : '—',
+                  value: s != null ? s.exportingKw.toStringAsFixed(1) : '—',
                   unit: 'kW → Red nacional',
                   color: Colors.green,
                   icon: Icons.upload,
@@ -215,10 +285,7 @@ class _OverviewTab extends StatelessWidget {
           },
         ),
         const SizedBox(height: 16),
-        PanelHeatmap(
-          panelStream: bloc.panelStream,
-          onPanelTap: onPanelTap,
-        ),
+        PanelHeatmap(panelStream: bloc.panelStream, onPanelTap: onPanelTap),
       ],
     );
   }
@@ -238,8 +305,9 @@ class _HeatmapTab extends StatelessWidget {
       children: [
         Card(
           elevation: 2,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -281,10 +349,7 @@ class _HeatmapTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        PanelHeatmap(
-          panelStream: bloc.panelStream,
-          onPanelTap: onPanelTap,
-        ),
+        PanelHeatmap(panelStream: bloc.panelStream, onPanelTap: onPanelTap),
       ],
     );
   }
@@ -338,8 +403,9 @@ class _GridTab extends StatelessWidget {
         // Aviso del throttle
         Card(
           elevation: 2,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: const Padding(
             padding: EdgeInsets.all(12),
             child: Row(
@@ -361,8 +427,9 @@ class _GridTab extends StatelessWidget {
         // Stream con throttle
         Card(
           elevation: 2,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -370,13 +437,18 @@ class _GridTab extends StatelessWidget {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.electrical_services,
-                        size: 18, color: Colors.indigo),
+                    Icon(
+                      Icons.electrical_services,
+                      size: 18,
+                      color: Colors.indigo,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Estado de la red eléctrica',
                       style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -396,21 +468,23 @@ class _GridTab extends StatelessWidget {
                           icon: Icons.upload,
                           color: Colors.green,
                         ),
-                        _GridRow(
+                        _GridMetricWithIndicator(
                           label: 'Frecuencia',
                           value: '${g.frequencyHz.toStringAsFixed(2)} Hz',
+                          normalMin: 49.5,
+                          normalMax: 50.5,
+                          currentValue: g.frequencyHz,
+                          isStable: g.isFrequencyStable,
                           icon: Icons.waves,
-                          color: g.isFrequencyStable
-                              ? Colors.green
-                              : Colors.red,
                         ),
-                        _GridRow(
+                        _GridMetricWithIndicator(
                           label: 'Voltaje',
                           value: '${g.voltageV.toStringAsFixed(1)} V',
+                          normalMin: 190.0,
+                          normalMax: 250.0,
+                          currentValue: g.voltageV,
+                          isStable: g.isVoltageStable,
                           icon: Icons.bolt,
-                          color: g.isVoltageStable
-                              ? Colors.green
-                              : Colors.orange,
                         ),
                         _GridRow(
                           label: 'Total hoy',
@@ -437,8 +511,9 @@ class _GridTab extends StatelessWidget {
         // Stream sin throttle — para comparar la diferencia
         Card(
           elevation: 2,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -446,8 +521,7 @@ class _GridTab extends StatelessWidget {
               children: [
                 const Text(
                   'Frecuencia sin throttle (cada 2 s)',
-                  style: TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 StreamBuilder<GridStatus>(
@@ -475,6 +549,103 @@ class _GridTab extends StatelessWidget {
   }
 }
 
+class _GridMetricWithIndicator extends StatelessWidget {
+  final String label;
+  final String value;
+  final double normalMin;
+  final double normalMax;
+  final double currentValue;
+  final bool isStable;
+  final IconData icon;
+
+  const _GridMetricWithIndicator({
+    required this.label,
+    required this.value,
+    required this.normalMin,
+    required this.normalMax,
+    required this.currentValue,
+    required this.isStable,
+    required this.icon,
+  });
+
+  Color get _statusColor {
+    if (isStable) return Colors.green;
+    if (currentValue < normalMin * 0.95 || currentValue > normalMax * 1.05) {
+      return Colors.red;
+    }
+    return Colors.orange;
+  }
+
+  double get _progressValue {
+    final range = normalMax - normalMin;
+    final progress = ((currentValue - normalMin) / range).clamp(0.0, 1.0);
+    return progress;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: _statusColor),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _statusColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  isStable ? 'Normal' : 'Alerta',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: _statusColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: _progressValue,
+              minHeight: 6,
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(_statusColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _GridRow extends StatelessWidget {
   final String label;
   final String value;
@@ -496,14 +667,16 @@ class _GridRow extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 8),
-          Text(label,
-              style: const TextStyle(fontSize: 13, color: Colors.grey)),
+          Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
           const Spacer(),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: color)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
         ],
       ),
     );

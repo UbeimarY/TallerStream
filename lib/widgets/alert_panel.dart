@@ -32,8 +32,11 @@ class _AlertPanelState extends State<AlertPanel> {
           children: [
             Row(
               children: [
-                const Icon(Icons.notifications_active,
-                    size: 18, color: Colors.red),
+                const Icon(
+                  Icons.notifications_active,
+                  size: 18,
+                  color: Colors.red,
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   'Centro de alertas',
@@ -56,12 +59,15 @@ class _AlertPanelState extends State<AlertPanel> {
                         }
                       });
                     }
-                    final unack =
-                        _alerts.where((a) => !a.isAcknowledged).length;
+                    final unack = _alerts
+                        .where((a) => !a.isAcknowledged)
+                        .length;
                     if (unack == 0) return const SizedBox();
                     return Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(12),
@@ -81,12 +87,43 @@ class _AlertPanelState extends State<AlertPanel> {
             ),
             const SizedBox(height: 8),
             if (_alerts.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(24),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
                 child: Center(
-                  child: Text(
-                    'Sin alertas activas',
-                    style: TextStyle(color: Colors.grey),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_circle_outline,
+                          size: 48,
+                          color: Colors.green[600],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Sin alertas activas',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tu planta solar está funcionando\nnormalmente en este momento',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -124,17 +161,23 @@ class _AlertTile extends StatelessWidget {
 
   Color get _color {
     switch (alert.severity) {
-      case AlertSeverity.info:     return Colors.blue;
-      case AlertSeverity.warning:  return Colors.orange;
-      case AlertSeverity.critical: return Colors.red;
+      case AlertSeverity.info:
+        return Colors.blue;
+      case AlertSeverity.warning:
+        return Colors.orange;
+      case AlertSeverity.critical:
+        return Colors.red;
     }
   }
 
   IconData get _icon {
     switch (alert.severity) {
-      case AlertSeverity.info:     return Icons.info_outline;
-      case AlertSeverity.warning:  return Icons.warning_amber_outlined;
-      case AlertSeverity.critical: return Icons.error_outline;
+      case AlertSeverity.info:
+        return Icons.info_outline;
+      case AlertSeverity.warning:
+        return Icons.warning_amber_outlined;
+      case AlertSeverity.critical:
+        return Icons.error_outline;
     }
   }
 
@@ -142,8 +185,7 @@ class _AlertTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       dense: true,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
       leading: Icon(_icon, color: _color, size: 20),
       title: Text(
         alert.message,
